@@ -1,0 +1,29 @@
+{
+  "name": "product_overview_api",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "jest --watch",
+    "testCoverage": "jest --coverage",
+    "start": "nodemon server/index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/SDC-Apricot/Product_Overview_API.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/SDC-Apricot/Product_Overview_API/issues"
+  },
+  "homepage": "https://github.com/SDC-Apricot/Product_Overview_API#readme",
+  "dependencies": {
+    "express": "^4.17.1",
+    "jest": "^27.0.6",
+    "nodemon": "^2.0.10"
+  }
+}
