@@ -23,7 +23,18 @@ app.get('/products', (req, res) => {
 
 // Returns all product level information for a specified product id.
 app.get('/products/:product_id', (req, res) => {
-  
+  let product_id = 1;
+  db.client.query(` SELECT * FROM Product_Info 
+                    LEFT OUTER JOIN Features ON Features.productId = Product_Info.productId 
+                    WHERE Features.productId = ${product_id}`, (err, data) => {
+    if (err) {
+      // console.log('error in /products/:product_id - ', err);
+      res.send(err);
+    } else {
+      // console.log('data from /products/:product_id - ', data.rows);
+      res.send(data.rows);
+    }
+  })
 });
 
 // Returns the all styles available for the given product.

@@ -6,7 +6,7 @@ CREATE DATABASE products;
 -- Table 'Product Info'
 DROP TABLE IF EXISTS Product_Info;
 CREATE TABLE Product_Info (
-  id INTEGER NOT NULL PRIMARY KEY,
+  productId INTEGER NOT NULL PRIMARY KEY,
   name VARCHAR NOT NULL,
   slogan VARCHAR NOT NULL,
   description VARCHAR NOT NULL,
