@@ -10,11 +10,13 @@ app.get('/', (req, res) => {
 
 // Retrieves the list of products.
 app.get('/products', (req, res) => {
-  db.client.query('SELECT * FROM Product_Info where id = 1', (err, result) => {
+  db.client.query('SELECT * FROM Product_Info LIMIT 10', (err, data) => {
     if (err) {
-      console.log(err);
+      // console.log('error in /products - ', err);
+      res.send(err);
     } else {
-      console.log(result.rows);
+      // console.log('data from /products - ', data.rows);
+      res.send(data.rows);
     }
   })
 });
