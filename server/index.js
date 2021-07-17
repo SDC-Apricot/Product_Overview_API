@@ -62,7 +62,7 @@ app.get('/products/:product_id/styles', (req, res) => {
                     ON sk.styleId = s.id
                     WHERE s.productId = ${product_id}`, (err, data) => {
     if (err) {
-      console.log('error in /products/:product_id/styles - ', err);
+      // console.log('error in /products/:product_id/styles - ', err);
       res.send(err);
     } else {
       // console.log('data from /products/:product_id/styles - ', data.rows);
@@ -72,8 +72,19 @@ app.get('/products/:product_id/styles', (req, res) => {
 });
 
 // Returns the id's of products related to the product specified.
-app.get('/products/:/products/:product_id/related', (req, res) => {
-  
+app.get('/products/:product_id/related', (req, res) => {
+  let product_id = 1;
+  db.client.query(` SELECT * FROM Product_Info
+                    LEFT OUTER JOIN Related ON Related.productId = Product_Info.productId 
+                    WHERE Related.productId = ${product_id}`, (err, data) => {
+    if (err) {
+      // console.log('error in /products/:product_id/related - ', err);
+      res.send(err);
+    } else {
+      // console.log('data from /products/:product_id/related - ', data.rows);
+      res.send(data.rows);
+    }
+  })
 });
 
 app.listen(port, () => {
