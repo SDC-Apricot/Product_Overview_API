@@ -24,11 +24,52 @@ app.get('/products', (req, res) => {
 // Returns all product level information for a specified product id.
 app.get('/products/:product_id', (req, res) => {
   let product_id = 1;
-  db.client.query(` SELECT * FROM Product_Info 
-                    LEFT OUTER JOIN Features ON Features.productId = Product_Info.productId 
-                    WHERE Features.productId = ${product_id}`, (err, data) => {
+  // db.client.query(` SELECT * FROM Product_Info 
+  //                   LEFT OUTER JOIN Features ON Features.productId = Product_Info.productId 
+  //                   WHERE Features.productId = ${product_id}`, (err, data) => {
+  
+  // db.client.query(` SELECT json_build_object(
+  //                   'productId', p.productId, 
+  //                   'name', p.name, 
+  //                   'features', 
+  //                     json_build_array (
+  //                       json_build_object(
+  //                         'id', f.productId,
+  //                         'feature', f.feature
+  //                       )
+  //                     ) 
+  //                   ) 
+  //                 FROM Product_Info p
+  //                 INNER JOIN Features f ON f.productId = p.productId 
+  //                 WHERE p.productId = 1                  
+  // `, (err, data) => { 
+
+    db.client.query(` SELECT (js_object) results
+                      FROM (
+                        SELECT
+                          jsonb_build_object (
+                            'productId', productId,
+                            'features', jsonb_agg(feat)
+                          ) js_object
+                        FROM (
+                          SELECT f.*,
+                          jsonb_build_object(
+                            'id', f.id,
+                            'name', p.name,
+                            'feature', f.feature,
+                            'value', f.value
+                          ) feat
+                          FROM Product_Info p
+                          JOIN Features f ON f.productId = p.productId
+                          WHERE p.productId = 1
+                        ) s
+                        GROUP BY productId
+                      ) s;
+      
+    `, (err, data) => {
+
     if (err) {
-      // console.log('error in /products/:product_id - ', err);
+      console.log('error in /products/:product_id - ', err);
       res.send(err);
     } else {
       // console.log('data from /products/:product_id - ', data.rows);
