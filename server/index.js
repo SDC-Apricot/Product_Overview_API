@@ -51,32 +51,60 @@ app.get('/products/:product_id', (req, res) => {
   })
 });
 
+// SELECT 
+// p.productId AS productId, 
+// p.name AS productName,
+// s.id AS styleId, 
+// s.name AS styleName, 
+// s.original_price AS styleOriginalPrice, 
+// s.default_style AS styleDefault, 
+// s.sale_price AS styleSalePrice, 
+// ph.styleId AS photoStyleId,
+// ph.url AS photoURL,
+// ph.thumbnail_url AS photoThumbURL, 
+// sk.size AS skuSize,
+// sk.quantity AS skuQuantity
+// FROM Product_Info p
+// LEFT OUTER JOIN Styles s 
+// ON s.productId = p.productId
+// LEFT OUTER JOIN Photos ph
+// ON ph.styleId = s.id
+// LEFT OUTER JOIN SKUS sk
+// ON sk.styleId = s.id
+// WHERE s.productId = ${product_id}
+
 // Returns the all styles available for the given product.
 app.get('/products/:product_id/styles', (req, res) => {
   let product_id = 1;
-  db.client.query(` SELECT 
-                      p.productId AS productId, 
-                      p.name AS productName,
-                      s.id AS styleId, 
-                      s.name AS styleName, 
-                      s.original_price AS styleOriginalPrice, 
-                      s.default_style AS styleDefault, 
-                      s.sale_price AS styleSalePrice, 
-                      ph.styleId AS photoStyleId,
-                      ph.url AS photoURL,
-                      ph.thumbnail_url AS photoThumbURL, 
-                      sk.size AS skuSize,
-                      sk.quantity AS skuQuantity
-                    FROM Product_Info p
-                    LEFT OUTER JOIN Styles s 
-                    ON s.productId = p.productId
-                    LEFT OUTER JOIN Photos ph
-                    ON ph.styleId = s.id
-                    LEFT OUTER JOIN SKUS sk
-                    ON sk.styleId = s.id
-                    WHERE s.productId = ${product_id}`, (err, data) => {
+  db.client.query(` 
+    SELECT row_to_json(id) results
+    FROM 
+    (
+      SELECT productId,
+        (
+          SELECT array_to_json(array_agg(row_to_json(row)))
+          FROM (
+            SELECT 
+              *, 
+              (
+                SELECT array_to_json(array_agg(row_to_json(row_inner)))
+                FROM (
+                  SELECT 
+                    *
+                  FROM Photos
+                  WHERE Styles.id = photos.styleId
+                ) row_inner
+              ) as photos
+            FROM Styles
+            WHERE Styles.productId = product_info.productId
+          ) row
+        ) as styles
+      FROM Product_Info
+      WHERE productId = ${product_id}
+    ) id
+    `, (err, data) => {
     if (err) {
-      // console.log('error in /products/:product_id/styles - ', err);
+      console.log('error in /products/:product_id/styles - ', err);
       res.send(err);
     } else {
       // console.log('data from /products/:product_id/styles - ', data.rows);
