@@ -103,11 +103,15 @@ app.get('/products/:product_id/styles', (req, res) => {
 // Returns the id's of products related to the product specified.
 app.get('/products/:product_id/related', (req, res) => {
   let product_id = 1;
-  db.client.query(` SELECT * FROM Product_Info
-                    LEFT OUTER JOIN Related ON Related.productId = Product_Info.productId 
-                    WHERE Related.productId = ${product_id}`, (err, data) => {
+  db.client.query(` 
+    SELECT array (
+      SELECT related_productId
+      FROM Related
+      WHERE productId = ${product_id}
+    ) related
+    `, (err, data) => {
     if (err) {
-      // console.log('error in /products/:product_id/related - ', err);
+      console.log('error in /products/:product_id/related - ', err);
       res.send(err);
     } else {
       // console.log('data from /products/:product_id/related - ', data.rows);
