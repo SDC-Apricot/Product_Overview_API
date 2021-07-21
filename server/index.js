@@ -85,7 +85,7 @@ app.get('/products/:product_id/styles', (req, res) => {
     ) id
     `, (err, data) => {
     if (err) {
-      console.log('error in /products/:product_id/styles - ', err);
+      // console.log('error in /products/:product_id/styles - ', err);
       res.send(err);
     } else {
       // console.log('data from /products/:product_id/styles - ', data.rows);
