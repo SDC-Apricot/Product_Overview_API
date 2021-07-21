@@ -24,11 +24,10 @@ app.get('/products', (req, res) => {
 // Returns all product level information for a specified product id.
 app.get('/products/:product_id', (req, res) => {
   let product_id = 1;
-    db.client.query(` 
+  db.client.query(` 
     SELECT row_to_json(info) results
     FROM (
-      SELECT *,
-        (
+      SELECT *, (
           SELECT array_to_json(array_agg(row_to_json(row)))
           FROM (
             SELECT feature, value
@@ -56,19 +55,15 @@ app.get('/products/:product_id/styles', (req, res) => {
   let product_id = 1;
   db.client.query(` 
     SELECT row_to_json(id) results
-    FROM 
-    (
-      SELECT productId,
-        (
+    FROM (
+      SELECT productId, (
           SELECT array_to_json(array_agg(row_to_json(row)))
           FROM (
             SELECT 
-              *, 
-              (
+              id AS styleId, name, original_price, sale_price, default_style AS default,  (
                 SELECT array_to_json(array_agg(row_to_json(row_inner)))
                 FROM (
-                  SELECT 
-                    *
+                  SELECT thumbnail_url, url
                   FROM Photos
                   WHERE Styles.id = photos.styleId
                 ) row_inner
@@ -76,8 +71,7 @@ app.get('/products/:product_id/styles', (req, res) => {
               (
                 SELECT array_to_json(array_agg(row_to_json(row_skus)))
                 FROM (
-                  SELECT 
-                    *
+                  SELECT size, quantity
                   FROM SKUS
                   WHERE Styles.id = skus.styleId
                 ) row_skus
@@ -111,7 +105,7 @@ app.get('/products/:product_id/related', (req, res) => {
     ) related
     `, (err, data) => {
     if (err) {
-      console.log('error in /products/:product_id/related - ', err);
+      // console.log('error in /products/:product_id/related - ', err);
       res.send(err);
     } else {
       // console.log('data from /products/:product_id/related - ', data.rows);
