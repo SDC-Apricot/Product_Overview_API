@@ -2,6 +2,8 @@ const express = require('express');
 const app = express();
 const port = 4000;
 const db = require('../database/connect.js');
+const dotenv = require('dotenv').config({path: __dirname + '/..' + '/.env'});
+const path = require('path');
 
 app.get('/', (req, res) => {
   res.send('Hello World');
@@ -9,7 +11,7 @@ app.get('/', (req, res) => {
 
 // Retrieves the list of products.
 app.get('/products', (req, res) => {
-  db.client.query('SELECT * FROM Product_Info LIMIT 10', (err, data) => {
+  db.client.query('SELECT * FROM Product_Info LIMIT 5', (err, data) => {
     if (err) {
       // console.log('error in /products - ', err);
       res.send(err);
@@ -96,12 +98,12 @@ app.get('/products/:product_id/styles', (req, res) => {
 app.get('/products/:product_id/related', (req, res) => {
   let product_id = 1;
   db.client.query(` 
-    SELECT array_to_json(array_agg(row_to_json(t)))
-    FROM (
-      SELECT related_productId 
-      FROM Related
-      WHERE productId = ${product_id}
-      ) t
+  SELECT array_to_json(array_agg(row_to_json(t)))
+  FROM (
+    SELECT related_productId 
+    FROM Related
+    WHERE productId = ${product_id}
+    ) t
     `, (err, data) => {
     if (err) {
       // console.log('error in /products/:product_id/related - ', err);
