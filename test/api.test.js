@@ -2,8 +2,8 @@ const request = require('supertest');
 const app = require('../server/app.js');
 
 const { Client } = require('pg');
-const axios = require('axios');
 const { response } = require('express');
+const axios = require('axios');
 const port = 4000;
 require('dotenv').config();
 
