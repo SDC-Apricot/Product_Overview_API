@@ -15,7 +15,7 @@ SELECT row_to_json(info) results
           ) row
         ) as features
       FROM Product_Info
-      WHERE productId = 1
+      WHERE productId = 1000000
     ) info;
 
 -- Get style and photo information
@@ -46,12 +46,11 @@ SELECT row_to_json(id) results
           ) row
         ) as results
       FROM Product_Info
-      WHERE productId = 1
+      WHERE productId = 1000000
     ) id;
   
 -- Get related products array
-SELECT * FROM Product_Info
-LEFT OUTER JOIN Related ON Related.productId = Product_Info.productId 
-WHERE Related.productId = 1;
+SELECT * FROM Related
+WHERE Related.productId = 1000000;
 
 \timing
