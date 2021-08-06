@@ -1,7 +1,9 @@
 \timing
 
+-- Get product list
 SELECT * FROM Product_Info LIMIT 5;
 
+-- Get product information
 SELECT row_to_json(info) results
     FROM (
       SELECT *, (
@@ -16,6 +18,7 @@ SELECT row_to_json(info) results
       WHERE productId = 1
     ) info;
 
+-- Get style and photo information
 SELECT row_to_json(id) results
     FROM (
       SELECT productId, (
@@ -46,11 +49,9 @@ SELECT row_to_json(id) results
       WHERE productId = 1
     ) id;
   
-SELECT array_to_json(array_agg(row_to_json(t)))
-  FROM (
-    SELECT related_productId 
-    FROM Related
-    WHERE productId = 1
-    ) t;
+-- Get related products array
+SELECT * FROM Product_Info
+LEFT OUTER JOIN Related ON Related.productId = Product_Info.productId 
+WHERE Related.productId = 1;
 
 \timing
