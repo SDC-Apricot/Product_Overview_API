@@ -1,9 +1,13 @@
 const express = require('express');
 const app = express();
-const port = 4000;
 const db = require('../database/connect.js');
 const dotenv = require('dotenv').config({path: __dirname + '/..' + '/.env'});
 const path = require('path');
+
+getRandomProduct = () => {
+  return Math.floor(Math.random() * 1000010);
+}
+console.log('#', getRandomProduct());
 
 app.get('/', (req, res) => {
   res.send('Hello World');
@@ -25,6 +29,10 @@ app.get('/products', (req, res) => {
 // Returns all product level information for a specified product id.
 app.get('/products/:product_id', (req, res) => {
   let product_id = 1;
+    // Before nesting the data: 
+      // SELECT * FROM Product_Info 
+      // LEFT OUTER JOIN Features ON Features.productId = Product_Info.productId 
+      // WHERE Features.productId = 999999;
   db.client.query(` 
     SELECT row_to_json(info) results
     FROM (
@@ -53,6 +61,28 @@ app.get('/products/:product_id', (req, res) => {
 // Returns the all styles available for the given product.
 app.get('/products/:product_id/styles', (req, res) => {
   let product_id = 1;
+    // Before nesting the data: 
+      // SELECT 
+      //     p.productId AS productId, 
+      //     p.name AS productName,
+      //     s.id AS styleId, 
+      //     s.name AS styleName, 
+      //     s.original_price AS styleOriginalPrice, 
+      //     s.default_style AS styleDefault, 
+      //     s.sale_price AS styleSalePrice, 
+      //     ph.styleId AS photoStyleId,
+      //     ph.url AS photoURL,
+      //     ph.thumbnail_url AS photoThumbURL, 
+      //     sk.size AS skuSize,
+      //     sk.quantity AS skuQuantity
+      //   FROM Product_Info p
+      //   LEFT OUTER JOIN Styles s 
+      //   ON s.productId = p.productId
+      //   LEFT OUTER JOIN Photos ph
+      //   ON ph.styleId = s.id
+      //   LEFT OUTER JOIN SKUS sk
+      //   ON sk.styleId = s.id
+      //   WHERE s.productId = 999999;
   db.client.query(` 
     SELECT row_to_json(id) results
     FROM (
@@ -97,6 +127,10 @@ app.get('/products/:product_id/styles', (req, res) => {
 // Returns the id's of products related to the product specified.
 app.get('/products/:product_id/related', (req, res) => {
   let product_id = 1;
+    // Before nesting the data: 
+      // SELECT * FROM Product_Info
+      // LEFT OUTER JOIN Related ON Related.productId = Product_Info.productId 
+      // WHERE Related.productId = 999999;
   db.client.query(` 
   SELECT array_to_json(array_agg(row_to_json(t)))
   FROM (
