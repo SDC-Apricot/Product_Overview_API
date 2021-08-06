@@ -15,28 +15,8 @@ app.get('/', (req, res) => {
 });
 
 // Retrieves the list of products.
-app.get('/sample', (req, res) => {
-  let relatedArray = [];
-  db.client.query(`
-    SELECT * FROM Product_Info
-    LEFT OUTER JOIN Related ON Related.productId = Product_Info.productId 
-    WHERE Related.productId = 1;
-  `, (err, data) => {
-    if (err) {
-      // console.log('error in /products - ', err);
-      res.send(err);
-    } else {
-      // console.log('data from /products/:product_id/related - ', data.rows);
-      var info = data.rows;
-      info.forEach(item => relatedArray.push(item.id))
-      res.send(relatedArray);
-    }
-  })
-});
-
-// Retrieves the list of products.
 app.get('/products', (req, res) => {
-  db.client.query('SELECT * FROM Product_Info LIMIT 5', (err, data) => {
+  db.client.query(`SELECT * FROM Product_Info LIMIT 5`, (err, data) => {
     if (err) {
       // console.log('error in /products - ', err);
       res.send(err);
@@ -50,10 +30,6 @@ app.get('/products', (req, res) => {
 // Returns all product level information for a specified product id.
 app.get('/products/:product_id', (req, res) => {
   let product_id = 1;
-  // Before nesting the data: 
-  // SELECT * FROM Product_Info 
-  // LEFT OUTER JOIN Features ON Features.productId = Product_Info.productId 
-  // WHERE Features.productId = 999999;
   db.client.query(` 
     SELECT row_to_json(info) results
     FROM (
@@ -82,28 +58,6 @@ app.get('/products/:product_id', (req, res) => {
 // Returns the all styles available for the given product.
 app.get('/products/:product_id/styles', (req, res) => {
   let product_id = 1;
-  // Before nesting the data: 
-  // SELECT 
-  //     p.productId AS productId, 
-  //     p.name AS productName,
-  //     s.id AS styleId, 
-  //     s.name AS styleName, 
-  //     s.original_price AS styleOriginalPrice, 
-  //     s.default_style AS styleDefault, 
-  //     s.sale_price AS styleSalePrice, 
-  //     ph.styleId AS photoStyleId,
-  //     ph.url AS photoURL,
-  //     ph.thumbnail_url AS photoThumbURL, 
-  //     sk.size AS skuSize,
-  //     sk.quantity AS skuQuantity
-  //   FROM Product_Info p
-  //   LEFT OUTER JOIN Styles s 
-  //   ON s.productId = p.productId
-  //   LEFT OUTER JOIN Photos ph
-  //   ON ph.styleId = s.id
-  //   LEFT OUTER JOIN SKUS sk
-  //   ON sk.styleId = s.id
-  //   WHERE s.productId = 999999;
   db.client.query(` 
     SELECT row_to_json(id) results
     FROM (
@@ -149,9 +103,8 @@ app.get('/products/:product_id/styles', (req, res) => {
 app.get('/products/:product_id/related', (req, res) => {
   let relatedArray = [];
   db.client.query(`
-    SELECT * FROM Product_Info
-    LEFT OUTER JOIN Related ON Related.productId = Product_Info.productId 
-    WHERE Related.productId = 1;
+    SELECT * FROM Related
+    WHERE Related.productId = 1000000
   `, (err, data) => {
     if (err) {
       // console.log('error in /products - ', err);
@@ -165,7 +118,6 @@ app.get('/products/:product_id/related', (req, res) => {
   })
 
 });
-
 
 
 module.exports = app;
