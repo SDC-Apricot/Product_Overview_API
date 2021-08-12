@@ -2,8 +2,13 @@ const express = require('express');
 const app = express();
 const port = 4000;
 const db = require('../database/connect.js');
-const dotenv = require('dotenv').config({path: __dirname + '/..' + '/.env'});
+const dotenv = require('dotenv').config({ path: __dirname + '/..' + '/.env' });
 const path = require('path');
+
+getRandomProduct = () => {
+  return Math.floor(Math.random() * 1000010);
+}
+console.log('#', getRandomProduct());
 
 app.get('/', (req, res) => {
   res.send('Hello World');
@@ -11,7 +16,7 @@ app.get('/', (req, res) => {
 
 // Retrieves the list of products.
 app.get('/products', (req, res) => {
-  db.client.query('SELECT * FROM Product_Info LIMIT 5', (err, data) => {
+  db.client.query(`SELECT * FROM Product_Info LIMIT 5`, (err, data) => {
     if (err) {
       // console.log('error in /products - ', err);
       res.send(err);
@@ -96,23 +101,22 @@ app.get('/products/:product_id/styles', (req, res) => {
 
 // Returns the id's of products related to the product specified.
 app.get('/products/:product_id/related', (req, res) => {
-  let product_id = 1;
-  db.client.query(` 
-  SELECT array_to_json(array_agg(row_to_json(t)))
-  FROM (
-    SELECT related_productId 
-    FROM Related
-    WHERE productId = ${product_id}
-    ) t
-    `, (err, data) => {
+  let relatedArray = [];
+  db.client.query(`
+    SELECT * FROM Related
+    WHERE Related.productId = 1000000
+  `, (err, data) => {
     if (err) {
-      // console.log('error in /products/:product_id/related - ', err);
+      // console.log('error in /products - ', err);
       res.send(err);
     } else {
       // console.log('data from /products/:product_id/related - ', data.rows);
-      res.send(data.rows);
+      var info = data.rows;
+      info.forEach(item => relatedArray.push(item.id))
+      res.send(relatedArray);
     }
-  })
+  });
 });
+
 
 module.exports = app;
