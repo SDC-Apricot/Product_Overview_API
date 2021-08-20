@@ -115,8 +115,7 @@ app.get('/products/:product_id/related', (req, res) => {
       info.forEach(item => relatedArray.push(item.id))
       res.send(relatedArray);
     }
-  })
-
+  });
 });
 
 
